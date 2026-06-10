@@ -26,8 +26,8 @@ ET.SubElement(channel, "link").text = f"https://archive.org/details/{archive_id}
 ET.SubElement(channel, "description").text = "Community streaming archive of older Hillside Hermitage Dhamma talks."
 ET.SubElement(channel, "language").text = "en-us"
 
-# FIX: This inserts the official cover art image tag properly into the feed header
-ET.SubElement(channel, "{http://www.itunes.com/dtds/podcast-1.0.dtd}image", href=f"https://archive.org/services/img/{archive_id}")
+# FIX: Swapping out the waveform for a high-quality, permanent public image URL
+ET.SubElement(channel, "{http://www.itunes.com/dtds/podcast-1.0.dtd}image", href="https://images.squarespace-cdn.com/content/v1/59439bd1e6f2e1cfdfcfda72/1497607730997-7W79TZZW7O120K9E68F0/image-asset.jpeg")
 # Loop through all files and parse individual audio tracks
 count = 0
 for file in files:
