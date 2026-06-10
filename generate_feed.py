@@ -27,7 +27,8 @@ ET.SubElement(channel, "description").text = "Community streaming archive of old
 ET.SubElement(channel, "language").text = "en-us"
 
 # FIX: Swapping out the waveform for a high-quality, permanent public image URL
-ET.SubElement(channel, "{http://www.itunes.com/dtds/podcast-1.0.dtd}image", href="https://images.squarespace-cdn.com/content/v1/59439bd1e6f2e1cfdfcfda72/1497607730997-7W79TZZW7O120K9E68F0/image-asset.jpeg")
+# FIX: Points to the clean, stable square thumbnail hosted on Internet Archive
+ET.SubElement(channel, "{http://www.itunes.com/dtds/podcast-1.0.dtd}image", href="https://ia800601.us.archive.org/29/items/hillside-hermitage-audio-archive-2015-2023/_ia_thumb.jpeg")
 # Loop through all files and parse individual audio tracks
 count = 0
 for file in files:
