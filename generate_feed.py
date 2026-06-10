@@ -6,13 +6,13 @@ from datetime import datetime
 # The identifier of the Archive.org item
 archive_id = "hillside-hermitage-audio-archive-2015-2023"
 
-# Metadata for your community podcast
-rss_url = "https://archive.org/advancedsearch.php?q=identifier%3A" + archive_id + "&fl[]=files&output=json"
+# FIX: Query the official Metadata API directly instead of the search engine
+metadata_url = f"https://archive.org/metadata/{archive_id}"
 
 try:
-    with urllib.request.urlopen(rss_url) as response:
+    with urllib.request.urlopen(metadata_url) as response:
         data = json.loads(response.read().decode())
-        files = data['response']['docs'][0]['files']
+        files = data.get('files', [])
 except Exception as e:
     print(f"Error fetching archive data: {e}")
     files = []
@@ -26,22 +26,31 @@ ET.SubElement(channel, "link").text = f"https://archive.org/details/{archive_id}
 ET.SubElement(channel, "description").text = "Community streaming archive of older Hillside Hermitage Dhamma talks."
 ET.SubElement(channel, "language").text = "en-us"
 
-# Loop through all 410 files and format them as individual podcast episodes
+# Loop through all files and parse individual audio tracks
+count = 0
 for file in files:
-    if file['name'].endswith('.mp3') or file['name'].endswith('.m4a'):
+    filename = file.get('name', '')
+    # Check for raw audio formats
+    if filename.endswith('.mp3') or filename.endswith('.m4a'):
+        count += 1
         item = ET.SubElement(channel, "item")
-        ET.SubElement(item, "title").text = file['name'].replace('.mp3', '').replace('.m4a', '').replace('_', ' ')
         
-        # Point the play button directly to the Internet Archive download link
-        file_url = f"https://archive.org/download/{archive_id}/{file['name']}"
+        # Clean up filenames into scannable public titles
+        clean_title = filename.replace('.mp3', '').replace('.m4a', '').replace('_', ' ').replace('-', ' ')
+        ET.SubElement(item, "title").text = clean_title
+        
+        # Generate the direct, high-speed streaming audio link
+        file_url = f"https://archive.org/download/{archive_id}/{filename}"
         ET.SubElement(item, "link").text = file_url
         
-        # Enclosure tag tells AntennaPod this is a playable streaming file
+        # Enclosure node is what tells AntennaPod that this is a playable podcast track
         enclosure = ET.SubElement(item, "enclosure", url=file_url, type="audio/mpeg")
         if 'size' in file:
             enclosure.set('length', str(file['size']))
             
         ET.SubElement(item, "guid", isPermaLink="true").text = file_url
+
+print(f"Detected and mapped {count} audio files!")
 
 # Save the generated feed
 tree = ET.ElementTree(rss)
