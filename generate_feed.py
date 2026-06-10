@@ -18,7 +18,7 @@ except Exception as e:
     files = []
 
 # Build the RSS Feed Structure
-rss = ET.Element("rss", version="2.0", xmlnsitunes="http://www.itunes.com/dtds/podcast-1.0.dtd")
+rss = ET.Element("rss", version="2.0", **{"xmlns:itunes": "http://www.itunes.com/dtds/podcast-1.0.dtd"})
 channel = ET.SubElement(rss, "channel")
 
 ET.SubElement(channel, "title").text = "Hillside Hermitage Audio Archive (2015-2023)"
@@ -26,6 +26,8 @@ ET.SubElement(channel, "link").text = f"https://archive.org/details/{archive_id}
 ET.SubElement(channel, "description").text = "Community streaming archive of older Hillside Hermitage Dhamma talks."
 ET.SubElement(channel, "language").text = "en-us"
 
+# FIX: This inserts the official cover art image tag properly into the feed header
+ET.SubElement(channel, "{http://www.itunes.com/dtds/podcast-1.0.dtd}image", href=f"https://archive.org/services/img/{archive_id}")
 # Loop through all files and parse individual audio tracks
 count = 0
 for file in files:
